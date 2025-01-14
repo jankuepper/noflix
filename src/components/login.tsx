@@ -11,6 +11,7 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { Link } from "react-router";
 
 const formSchema = z.object({
   username: z
@@ -74,6 +75,8 @@ export function LoginForm() {
           <Button type="submit" className="mt-4">
             Submit
           </Button>
+          <br />
+          <Link to="/signup">Don't have an account yet? Sign-up here!</Link>
         </form>
       </Form>
     </>

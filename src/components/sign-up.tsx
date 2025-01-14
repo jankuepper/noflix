@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -111,10 +110,6 @@ export function SignUpForm() {
           <Button type="submit" className="mt-4">
             Submit
           </Button>
-          <br />
-          <Link to="/login" className="">
-            Already got an account? Log in here!
-          </Link>
         </form>
       </Form>
     </>
