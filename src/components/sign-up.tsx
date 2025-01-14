@@ -42,7 +42,7 @@ const formSchema = z
     path: ["confirm"], // path of error
   });
 
-export function SignInForm() {
+export function SignUpForm() {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
