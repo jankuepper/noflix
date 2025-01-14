@@ -13,3 +13,7 @@ export async function logout() {
 export async function refresh() {
   return pb.collection("users").authRefresh();
 }
+
+export async function isLoggedIn() {
+  return pb.authStore.record;
+}
