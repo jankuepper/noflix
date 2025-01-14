@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -13,6 +12,7 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { signUp } from "@/lib/pocketbase";
 
 const formSchema = z
   .object({
@@ -51,10 +51,19 @@ export function SignInForm() {
       confirm: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const { id } = await signUp(
+        values.username,
+        values.password,
+        values.confirm
+      );
+      if (!id) {
+        throw Error("Something went wrong.");
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }
   return (
     <>
