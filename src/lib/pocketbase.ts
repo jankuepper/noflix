@@ -27,6 +27,5 @@ export async function refresh() {
 }
 
 export async function isLoggedIn() {
-  console.log(pb.authStore.record);
   return !!pb.authStore.record;
 }
