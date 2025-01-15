@@ -11,7 +11,8 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { login } from "@/lib/pocketbase";
 
 const formSchema = z.object({
   username: z
@@ -30,6 +31,7 @@ const formSchema = z.object({
 });
 
 export function LoginForm() {
+  const navigate = useNavigate();
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -37,48 +39,62 @@ export function LoginForm() {
       password: "",
     },
   });
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const {
+        record: { id },
+      } = await login(values.username, values.password);
+      if (!id) {
+        throw Error("Something went wrong.");
+      }
+      navigate("/movies");
+    } catch (e) {
+      console.error(e);
+    }
   }
   return (
-    <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <FormField
-            control={form.control}
-            name="username"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input placeholder="username" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input placeholder="password" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="mt-4">
-            Submit
-          </Button>
-          <br />
-          <Link to="/signup">Don't have an account yet? Sign-up here!</Link>
-        </form>
-      </Form>
-    </>
+    <div className="grid h-screen place-items-center text-center">
+      <h1 className="grid place-items-center text-center self-end mb-8">
+        Login
+      </h1>
+      <div className="grid place-items-center text-center self-start">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" className="mt-4">
+              Submit
+            </Button>
+          </form>
+          <Link className="mt-4" to="/signup">
+            Don't have an account yet? Sign-up here!
+          </Link>
+        </Form>
+      </div>
+    </div>
   );
 }
