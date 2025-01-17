@@ -2,16 +2,18 @@ import { Link, useNavigate } from "react-router";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./mode-toggle";
 import { isLoggedIn, logout, refresh } from "@/lib/pocketbase";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
+import { ChevronsUpDown } from "lucide-react";
 
 export function Movies() {
-  // ein Select für Seasons, dann zeigt es die Episoden der Season an
-  // ein Logout Button
-  // Grid
   useEffect(() => {
     handleLoggedInCheck();
-
     const intervalId = setInterval(async () => {
       handleLoggedInCheck();
     }, 60000);
@@ -19,7 +21,6 @@ export function Movies() {
       clearInterval(intervalId);
     };
   }, []);
-
   const handleLoggedInCheck = async () => {
     const loggedIn = await isLoggedIn();
     if (!loggedIn) {
@@ -28,13 +29,12 @@ export function Movies() {
       refresh();
     }
   };
-
   const navigate = useNavigate();
   const handleLogout = async () => {
     await logout();
     navigate("/");
   };
-
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <>
       <div className="h-dvh flex flex-col w-full h-full">
@@ -45,7 +45,34 @@ export function Movies() {
           >
             NoFlix
           </Link>
-          <div>TEst</div>
+          <div>
+            <Collapsible
+              open={isOpen}
+              onOpenChange={setIsOpen}
+              className="w-[350px] space-y-2"
+            >
+              <div className="flex items-center justify-between space-x-4 px-4">
+                <h4 className="text-sm font-semibold">Current Season:</h4>
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <ChevronsUpDown className="h-4 w-4" />
+                    <span className="sr-only">Toggle</span>
+                  </Button>
+                </CollapsibleTrigger>
+              </div>
+              <div className="rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
+                @radix-ui/primitives
+              </div>
+              <CollapsibleContent className="space-y-2">
+                <div className="rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
+                  @radix-ui/colors
+                </div>
+                <div className="rounded-md border px-4 py-2 font-mono text-sm shadow-sm">
+                  @stitches/react
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+          </div>
           <div className="flex items-center">
             <ModeToggle />
             <Button
