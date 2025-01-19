@@ -12,7 +12,7 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Link, useNavigate } from "react-router";
-import { login } from "@/lib/pocketbase";
+import { Collection, login } from "@/lib/pocketbase";
 
 const formSchema = z.object({
   username: z
@@ -30,7 +30,11 @@ const formSchema = z.object({
     .max(30, "You're password is to long"),
 });
 
-export function LoginForm() {
+type LoginDestination = "/movies" | "/dashboard";
+export function LoginForm(props: {
+  collection: Collection;
+  destination: LoginDestination;
+}) {
   const navigate = useNavigate();
   const form = useForm({
     resolver: zodResolver(formSchema),
@@ -41,13 +45,17 @@ export function LoginForm() {
   });
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
-      const {
-        record: { id },
-      } = await login(values.username, values.password);
+      const { record: {id, verified} } = await login(
+        values.username,
+        values.password,
+        props.collection
+      );
       if (!id) {
         throw Error("Something went wrong.");
       }
-      navigate("/movies");
+      if(verified){
+        navigate(props.destination);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -80,7 +88,7 @@ export function LoginForm() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input placeholder="password" {...field} />
+                    <Input placeholder="password" type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

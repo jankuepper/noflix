@@ -14,18 +14,27 @@ export async function signUp(
   });
 }
 
-export async function login(username: string, password: string) {
-  return pb.collection("users").authWithPassword(username, password);
+export type Collection = "users" | "_superusers";
+export async function login(
+  username: string,
+  password: string,
+  collection: Collection = "users"
+) {
+  return pb.collection(collection).authWithPassword(username, password);
 }
 
 export async function logout() {
   return pb.authStore.clear();
 }
 
-export async function refresh() {
-  return pb.collection("users").authRefresh();
+export async function refresh(collection: Collection = "users") {
+  return pb.collection(collection).authRefresh();
 }
 
 export async function isLoggedIn() {
   return !!pb.authStore.record;
+}
+
+export async function create(collection: "season" | "episode", args: Object) {
+  return pb.collection(collection).create(args);
 }
